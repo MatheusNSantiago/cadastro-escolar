@@ -2,18 +2,21 @@
 #include <stdio.h>
 #include <string.h>
 
-int escolher(char *m0, char *m1, char *m2)
+bool escolher(char *m0, char *m1, char *m2)
 {
     int opcao;
     do
     {
-        printf("%s (0- %s, 1- %s): ", m0, m1, m2);
+        printf("%s (1- %s, 2- %s): ", m0, m1, m2);
         scanf("%d", &opcao);
         getchar();
 
-    } while ((opcao != 0) && (opcao != 1));
+    } while ((opcao != 1) && (opcao != 2));
 
-    return opcao;
+    if (opcao == 1)
+        return true;
+    
+    return false;
 }
 
 void ler(char *input, int len)

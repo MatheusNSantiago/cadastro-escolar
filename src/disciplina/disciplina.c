@@ -7,7 +7,7 @@ void cadastrar_disciplina()
     char *args[11], padrao[400];
     Disciplina d, aux;
 
-    // printf("Dados: ");
+    printf("Dados: ");
     // ler(padrao, sizeof(padrao));
     strcpy(padrao, "cod;nome;1;p");
     puts(padrao);
@@ -16,8 +16,8 @@ void cadastrar_disciplina()
 
     strcpy(d.codigo, args[0]);
 
-    /* Verifica se excedeu o limite de disciplinas e se a disciplina já consta na base de dados */
-    bool tem_vaga = false, e_duplicada = false;
+    /* Verifica se excedeu o limite de disciplinas ou se a disciplina já consta na base de dados */
+    bool tem_vaga = false, is_duplicada = false;
     for (int i = 0; i < MAX_DISCIPLINAS_ESCOLA; i++)
     {
         aux = escola.disciplinas[i];
@@ -25,7 +25,7 @@ void cadastrar_disciplina()
         if (strlen(aux.codigo) == 0)
             tem_vaga = true;
         if (aux.codigo == d.codigo)
-            e_duplicada = true;
+            is_duplicada = true;
     }
     if (!tem_vaga)
     {
@@ -33,7 +33,7 @@ void cadastrar_disciplina()
         sleep(SLEEP);
         return;
     }
-    if (e_duplicada)
+    if (is_duplicada)
     {
         puts("\nJá existe uma disciplina com o mesmo código...");
         sleep(SLEEP);
@@ -95,13 +95,12 @@ void alterar_professor_de_uma_disciplina()
 
 void adicionar_um_aluno_a_uma_disciplina()
 {
-    char matricula[50], codigo[50];
+    char matricula[50], cod_disciplina[50];
     Pessoa *aluno;
     Disciplina *disciplina;
 
-    // printf("Matricula do aluno: ");
-    // ler(matricula, sizeof(matricula));
-    strcpy(matricula, "m");
+    printf("Matricula do aluno: ");
+    ler(matricula, sizeof(matricula));
 
     aluno = buscar_aluno(matricula);
     /* Confere se o aluno existe */
@@ -112,11 +111,10 @@ void adicionar_um_aluno_a_uma_disciplina()
         return;
     }
 
-    // printf("Código da disciplina: ");
-    // ler(codigo, sizeof(codigo));
-    strcpy(codigo, "cod");
+    printf("Código da disciplina: ");
+    ler(cod_disciplina, sizeof(cod_disciplina));
 
-    disciplina = buscar_disciplina(codigo);
+    disciplina = buscar_disciplina(cod_disciplina);
     /* Confere se a disciplina existe */
     if (disciplina == NULL)
     {
@@ -126,7 +124,7 @@ void adicionar_um_aluno_a_uma_disciplina()
     }
 
     /* Confere se o número de alunos para a disciplina foi execedido */
-    if (len_alunos_disciplina(codigo) == MAX_ALUNOS_DISCIPLINA)
+    if (qnt_alunos_disciplina(cod_disciplina) == MAX_ALUNOS_DISCIPLINA)
     {
         puts("\nA disciplina já está em sua capacidade máxima de 10 alunos...");
         sleep(SLEEP);
@@ -181,7 +179,7 @@ void remover_aluno_de_uma_disciplina()
     }
 
     /* Confere se a disciplina não está vazia */
-    if (len_alunos_disciplina(codigo) == 0)
+    if (qnt_alunos_disciplina(codigo) == 0)
     {
         puts("\nEssa disciplina não possui nenhum aluno...");
         sleep(SLEEP);
@@ -190,8 +188,9 @@ void remover_aluno_de_uma_disciplina()
 
     /* Remove o aluno da disciplina */
     for (int i = 0; i < MAX_ALUNOS_DISCIPLINA; i++)
-        if (strcpy((*disciplina).alunos[i].matricula, matricula) == 0)
+        if (strcmp(disciplina->alunos[i].matricula, matricula) == 0)
         {
+            strcpy(disciplina->alunos[i].matricula, "");
             puts("\nAluno removido da disciplina com sucesso!");
             sleep(SLEEP);
             return;
@@ -228,7 +227,7 @@ void exibir_dados_de_uma_disciplina()
     printf("- Professor: %s %s\n", d.professor.nome, d.professor.sobrenome);
     puts("- Alunos:");
 
-    int qnt_alunos = len_alunos_disciplina(d.codigo);
+    int qnt_alunos = qnt_alunos_disciplina(d.codigo);
     if (qnt_alunos > 0)
         for (int i = 0; i < qnt_alunos; i++)
             printf("  - %s (%s)\n", d.alunos[i].nome, d.alunos[i].matricula);

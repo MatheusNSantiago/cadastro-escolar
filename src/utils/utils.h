@@ -8,7 +8,7 @@
 
 #define SLEEP 0
 
-int escolher(char *m0, char *m1, char *m2);
+bool escolher(char *m0, char *m1, char *m2);
 
 void ler(char *input, int len);
 

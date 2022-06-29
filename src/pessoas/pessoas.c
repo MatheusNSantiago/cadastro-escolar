@@ -5,6 +5,17 @@
 #include <stdlib.h>
 #include "../utils/utils.h"
 
+/* Padrões:
+Caso seja Brasileiro, não PcD e é um aluno:
+    - nome;sobrenome;0;CPF;RG;DD/MM/AAAA;0;CEP;0
+Caso seja Brasileiro, PcD e é um aluno:
+    - nome;sobrenome;0;CPF;RG;DD/MM/AAAA;1;LAUDO;CEP;0
+Caso seja Brasileiro, não PcD e é um professor:
+    - nome;sobrenome;0;CPF;RG;DD/MM/AAAA;0;CEP;1;PIS
+Caso seja Brasileiro, PcD e é um professor:
+    - nome;sobrenome;0;CPF;RG;DD/MM/AAAA;1;LAUDO;CEP;1;PIS
+Para pessoa estrangeira altera-se apenas o terceiro, quarto e quinto elemento
+ao invés de 0;CPF;RG deve ser fornecido NUMPassaporte;PaisOrigem */
 void cadastrar_pessoa()
 {
     Pessoa p;
@@ -12,9 +23,9 @@ void cadastrar_pessoa()
     char padrao[400];
 
     /* Recebe o padrão como input */
-
     printf("Dados: ");
 
+    /* |────────────────────────────────────────────────| DEBUG |────────────────────────────────────────────────| */
     int i;
     scanf("%d", &i);
     getchar();
@@ -22,20 +33,20 @@ void cadastrar_pessoa()
     if (i == 1)
         strcpy(padrao, "Daniel;Saad;1;Passaporte;Chile;10/12/1984;0;1234;1;p");
     else
-        strcpy(padrao, "matheus;santiago;0;14163386750;3950638;19/07/1999;1;laudo medico;71015112;0;m");
+        strcpy(padrao, "matheus;santiago;0;14163386750;3950638;19/07/1999;1;laudo medico;71015112;0");
     puts(padrao);
+    /* |─────────────────────────────────────────────────────────────────────────────────────────────────────────| */
 
     // ler(padrao, sizeof(padrao));
 
     extract_arguments_from_string(args, padrao);
 
-    // /* TODO error handling - enforçar digitação correta dos argumentos */
 
     /* Designa os atributos */
     strncpy(p.nome, args[0], sizeof(p.nome) - 1);
     strncpy(p.sobrenome, args[1], sizeof(p.sobrenome) - 1);
-    p.brasileiro_ou_estrangeiro = atoi(args[2]);
-    if (p.brasileiro_ou_estrangeiro == 0) // Se for brasileiro
+    p.is_estrangeiro = atoi(args[2]);
+    if (p.is_estrangeiro == 0) // Se for brasileiro
     {
         strncpy(p.cpf, args[3], sizeof(p.cpf) - 1);
         strncpy(p.rg, args[4], sizeof(p.rg) - 1);
@@ -48,53 +59,66 @@ void cadastrar_pessoa()
 
     sscanf(args[5], "%d/%d/%d", &p.nascimento.dia, &p.nascimento.mes, &p.nascimento.ano);
 
-    p.é_pcd = atoi(args[6]);
-    if (p.é_pcd) // Se for pessoa com deficiência
+    p.is_pcd = atoi(args[6]);
+    if (p.is_pcd) // Se for pessoa com deficiência
         strncpy(p.laudo_medico, args[7], sizeof(p.laudo_medico) - 1);
 
-    strncpy(p.cep, args[7 + p.é_pcd], sizeof(p.cep) - 1);
+    strncpy(p.cep, args[7 + p.is_pcd], sizeof(p.cep) - 1);
 
-    p.aluno_ou_professor = atoi(args[8 + p.é_pcd]);
-    if (p.aluno_ou_professor == 0) // Se for alluno
-        strncpy(p.matricula, args[9 + p.é_pcd], sizeof(p.matricula) - 1);
-    else
-        strncpy(p.pis, args[9 + p.é_pcd], sizeof(p.pis) - 1);
-
-    // Verificar se há espaço suficiente para inserir o aluno/professor
-    if (p.aluno_ou_professor == 0)
+    p.is_professor = atoi(args[8 + p.is_pcd]);
+    if (p.is_professor)
     {
-        if (len_alunos_escola() == MAX_ALUNOS_ESCOLA)
+        strncpy(p.pis, args[9 + p.is_pcd], sizeof(p.pis) - 1);
+
+        // Verificar se há espaço suficiente para inserir o professor
+        if (qnt_professores() == MAX_PROFESSORES_ESCOLA)
+        {
+            puts("\nAtingiu o limite máximo (30) de professores. Voltando para o menu principal...");
+            sleep(SLEEP);
+            return;
+        }
+
+        /* Inserir o professor na escola */
+        for (int i = 0; i < MAX_PROFESSORES_ESCOLA; i++)
+            if (strlen(escola.professores[i].matricula) == 0)
+            {
+                escola.professores[i] = p;
+
+                // puts("\nProfessor cadastrado com sucesso!");
+                sleep(SLEEP);
+                return;
+            }
+    }
+    else // Se for aluno
+    {
+        int qnt_alunos = qnt_alunos_escola();
+
+        if (qnt_alunos == 0)
+            strcpy(p.matricula, "22001");
+        else
+        {
+            /* a nova matrícula vai ser a matricula do último aluno + 1  */
+            char *ultima_matricula = escola.alunos[qnt_alunos - 1].matricula;
+            int n_ultima_matricula = atoi(ultima_matricula);
+
+            sprintf(p.matricula, "%d", n_ultima_matricula + 1);
+        }
+
+        // Verificar se há espaço suficiente para inserir o aluno
+        if (qnt_alunos == MAX_ALUNOS_ESCOLA)
         {
             puts("\nAtingiu o limite máximo (30) de alunos. Voltando para o menu principal...");
             sleep(SLEEP);
             return;
         }
 
+        /* Insere o aluno na escola */
         for (int i = 0; i < MAX_ALUNOS_ESCOLA; i++)
             if (strlen(escola.alunos[i].matricula) == 0)
             {
                 escola.alunos[i] = p;
 
                 // puts("\nAluno cadastrado com sucesso!");
-                sleep(SLEEP);
-                return;
-            }
-    }
-    else
-    {
-        if (len_professores() == MAX_PROFESSORES_ESCOLA)
-        {
-            puts("\nAtingiu o limite máximo (5) de professores. Voltando para o menu principal...");
-            sleep(SLEEP);
-            return;
-        }
-
-        for (int i = 0; i < 5; i++)
-            if (strlen(escola.professores[i].matricula) == 0)
-            {
-                escola.professores[i] = p;
-
-                // puts("\nProfessor cadastrado com sucesso!");
                 sleep(SLEEP);
                 return;
             }
@@ -118,35 +142,35 @@ void exibir_dados_de_uma_pessoa()
     puts("\n****************************************");
     printf("- Nome: %s\n", p.nome);
     printf("- Sobrenome: %s\n", p.sobrenome);
-    if (p.brasileiro_ou_estrangeiro == 0)
-    {
-        puts("- Brasileiro");
-        printf("  - CPF: %s\n", p.cpf);
-        printf("  - RG: %s\n", p.rg);
-    }
-    else
+    if (p.is_estrangeiro)
     {
         puts("- Extrangeiro");
         printf("  - Passaporte: %s\n", p.passaporte);
         printf("  - País de origem: %s\n", p.pais_de_origem);
     }
+    else
+    {
+        puts("- Brasileiro");
+        printf("  - CPF: %s\n", p.cpf);
+        printf("  - RG: %s\n", p.rg);
+    }
     printf("- Data de Nascimento: %d/%d/%d\n", p.nascimento.dia, p.nascimento.mes, p.nascimento.ano);
-    if (p.é_pcd == 1)
+    if (p.is_pcd)
     {
         puts("- Pessoa com Deficiência (PcD)");
         printf("  - Laudo médico: %s\n", p.laudo_medico);
     }
 
     printf("- CEP: %s\n", p.cep);
-    if (p.aluno_ou_professor == 0)
-    {
-        puts("- Aluno");
-        printf("  - Matricula: %s\n", p.matricula);
-    }
-    else
+    if (p.is_professor)
     {
         puts("- Professor");
         printf("  - PIS: %s\n", p.pis);
+    }
+    else // É aluno
+    {
+        puts("- Aluno");
+        printf("  - Matricula: %s\n", p.matricula);
     }
 
     puts("****************************************");
@@ -158,11 +182,11 @@ Pessoa *buscar_pessoa()
 {
     char indentificacao[50];
     Pessoa *pessoa = NULL;
+    bool is_busca_por_aluno = escolher("Buscar por: ", "Aluno", "Professor");
 
-    if (escolher("Alvo: ", "Aluno", "Professor") == 0)
+    if (is_busca_por_aluno)
     { /* Busca por aluno */
 
-        /* TODO Formato da matricula escolar => 22 (Ano) + 001 (id do primeiro aluno cadastrado)  */
         printf("Número da matrícula escolar: ");
         scanf("%50s", indentificacao);
         getchar();
@@ -210,20 +234,20 @@ Pessoa *buscar_aluno(char *matricula)
     return aluno;
 }
 
+
 void alterar_dados_de_pessoa()
 {
-    Pessoa *aux_p, p;
+    Pessoa *p;
     int opcao;
 
-    aux_p = buscar_pessoa();
-    if (aux_p == NULL)
+    p = buscar_pessoa();
+    if (p == NULL)
     {
         puts("\nPessoa não consta na base de dados. Retornando ao menu principal...");
         sleep(SLEEP);
         return;
     }
 
-    p = *aux_p;
     do
     {
         puts("\n(1) Alterar pessoa com deficiência (PcD);");
@@ -238,17 +262,18 @@ void alterar_dados_de_pessoa()
         {
         case 1:
             if (escolher("É pessoa com deficiência (PcD)?", "Sim", "Não"))
-                p.é_pcd = true;
+                p->is_pcd = true;
             else
-                p.é_pcd = false;
+                p->is_pcd = false;
+            strcpy(p->laudo_medico, "");
             return;
         case 2:
             printf("Código do laudo médico: ");
-            ler(p.laudo_medico, sizeof(p.laudo_medico));
+            ler(p->laudo_medico, sizeof(p->laudo_medico));
             return;
         case 3:
             printf("CEP: ");
-            ler(p.cep, sizeof(p.cep));
+            ler(p->cep, sizeof(p->cep));
             return;
         case 4:
             puts("\nVoltando...");
@@ -271,10 +296,10 @@ void remover_pessoa()
         return;
     }
 
-    if ((*p).aluno_ou_professor == 0)
-        strcpy(p->matricula, "");
-    else
+    if (p->is_professor)
         strcpy(p->pis, "");
+    else
+        strcpy(p->matricula, "");
 
     puts("\nRemocação bem sucedida!");
 }

@@ -21,7 +21,7 @@ void init_escola()
         strcpy(escola.professores[i].pis, "");
 }
 
-int len_alunos_escola()
+int qnt_alunos_escola()
 {
     int count = 0;
     for (int i = 0; i < MAX_ALUNOS_ESCOLA; i++)
@@ -31,7 +31,7 @@ int len_alunos_escola()
     return count;
 }
 
-int len_alunos_disciplina(char *codigo)
+int qnt_alunos_disciplina(char *codigo)
 {
 
     Disciplina *d = buscar_disciplina(codigo);
@@ -41,18 +41,13 @@ int len_alunos_disciplina(char *codigo)
 
     int count = 0;
     for (int i = 0; i < MAX_ALUNOS_DISCIPLINA; i++)
-    {
         if (strlen(d->alunos[i].matricula) != 0)
-        {
             count++;
-            printf("%s\n", d->alunos[i].nome);
-        }
-    }
 
     return count;
 }
 
-int len_disciplinas()
+int qnt_disciplinas()
 {
     int count = 0;
     for (int i = 0; i < MAX_DISCIPLINAS_ESCOLA; i++)
@@ -62,7 +57,7 @@ int len_disciplinas()
     return count;
 }
 
-int len_professores()
+int qnt_professores()
 {
     int count = 0;
     for (int i = 0; i < MAX_PROFESSORES_ESCOLA; i++)

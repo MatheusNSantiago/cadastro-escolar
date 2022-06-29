@@ -2,6 +2,7 @@
 #define _ESTRUTURAS_H
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define MAX_ALUNOS_DISCIPLINA 5
 #define MAX_ALUNOS_ESCOLA 30
@@ -21,20 +22,19 @@ typedef struct pessoa
     char nome[50];
     char sobrenome[50];
 
-    int brasileiro_ou_estrangeiro;
+    bool is_estrangeiro;
     char cpf[50];            // caso seja brasileiro
     char rg[50];             // caso seja brasileiro
     char passaporte[50];     // caso seja estrangeiro
     char pais_de_origem[50]; // caso seja estrangeiro
 
     Data nascimento;
-
-    int é_pcd;
-    char laudo_medico[11]; // caso seja pcd
+    bool is_pcd;
+    char laudo_medico[1000]; // caso seja pcd
 
     char cep[50];
 
-    int aluno_ou_professor;
+    bool is_professor;
     char matricula[50]; // caso seja aluno
     char pis[50];       // caso seja professor (número do programa de integração social)
 } Pessoa;
@@ -60,9 +60,9 @@ typedef struct escola
 extern Escola escola;
 
 void init_escola();
-int len_alunos_escola();
-int len_alunos_disciplina(char *codigo);
-int len_disciplinas();
-int len_professores();
+int qnt_alunos_escola();
+int qnt_alunos_disciplina(char *codigo);
+int qnt_disciplinas();
+int qnt_professores();
 
 #endif // _ESTRUTURAS_H

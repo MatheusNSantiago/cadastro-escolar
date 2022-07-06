@@ -22,13 +22,13 @@ void cadastrar_disciplina()
     }
     if (!tem_vaga)
     {
-        puts("\nO limite máximo de 5 disciplinas já foi alcançado...");
+        puts("\nO limite máximo de 5 disciplinas já foi alcançado...\n");
         sleep(SLEEP);
         return;
     }
     if (is_duplicada)
     {
-        puts("\nJá existe uma disciplina com o mesmo código...");
+        puts("\nJá existe uma disciplina com o mesmo código...\n");
         sleep(SLEEP);
         return;
     }
@@ -36,11 +36,11 @@ void cadastrar_disciplina()
     printf("Nome: ");
     ler(d.nome, 50);
 
-    printf("Carga horária");
+    printf("Carga horária: ");
     scanf("%d", &d.carga_horaria);
     getchar();
 
-    char *pis;
+    char pis[50];
     printf("PIS do professor: ");
     ler(pis, 50);
 
@@ -49,7 +49,7 @@ void cadastrar_disciplina()
         d.professor = *professor;
     else
     {
-        puts("\nProfessor não consta na base de dados...");
+        puts("\nProfessor não consta na base de dados...\n");
         sleep(SLEEP);
         return;
     }
@@ -57,7 +57,7 @@ void cadastrar_disciplina()
     /* Inserir disciplina */
     append_disciplina(d);
 
-    // puts("\nDisciplina cadastrada com sucesso.");
+    puts("\nDisciplina cadastrada com sucesso.\n");
     sleep(SLEEP);
 }
 
@@ -73,7 +73,7 @@ void alterar_professor_de_uma_disciplina()
     disc = buscar_disciplina(codigo);
     if (disc == NULL)
     {
-        puts("\nDisciplina não consta na base de dados...");
+        puts("\nDisciplina não consta na base de dados...\n");
         sleep(SLEEP);
         return;
     }
@@ -84,14 +84,14 @@ void alterar_professor_de_uma_disciplina()
     prof = buscar_professor(pis);
     if (prof == NULL)
     {
-        puts("\nPIS não consta na base de dados...");
+        puts("\nPIS não consta na base de dados...\n");
         sleep(SLEEP);
         return;
     }
 
     (*disc).professor = *prof;
 
-    puts("\nO professor foi alterado com sucesso!");
+    puts("\nO professor foi alterado com sucesso!\n");
     sleep(SLEEP);
 }
 
@@ -108,7 +108,7 @@ void adicionar_um_aluno_a_uma_disciplina()
     /* Confere se o aluno existe */
     if (aluno == NULL)
     {
-        puts("\nO aluno não consta na base de dados...");
+        puts("\nO aluno não consta na base de dados...\n");
         sleep(SLEEP);
         return;
     }
@@ -120,7 +120,7 @@ void adicionar_um_aluno_a_uma_disciplina()
     /* Confere se a disciplina existe */
     if (disciplina == NULL)
     {
-        puts("\nCódigo da disciplina não consta na base de dados...");
+        puts("\nCódigo da disciplina não consta na base de dados...\n");
         sleep(SLEEP);
         return;
     }
@@ -128,7 +128,7 @@ void adicionar_um_aluno_a_uma_disciplina()
     /* Confere se o número de alunos para a disciplina foi execedido */
     if (qnt_alunos_disciplina(cod_disciplina) == MAX_ALUNOS_DISCIPLINA)
     {
-        puts("\nA disciplina já está em sua capacidade máxima de 10 alunos...");
+        puts("\nA disciplina já está em sua capacidade máxima de 10 alunos...\n");
         sleep(SLEEP);
         return;
     }
@@ -137,7 +137,7 @@ void adicionar_um_aluno_a_uma_disciplina()
     for (int i = 0; i < MAX_ALUNOS_DISCIPLINA; i++)
         if (strcmp(disciplina->alunos[i].matricula, matricula) == 0)
         {
-            puts("\nO Aluno já está cadastrado nessa disciplina...");
+            puts("\nO Aluno já está cadastrado nessa disciplina...\n");
             sleep(SLEEP);
             return;
         }
@@ -145,7 +145,7 @@ void adicionar_um_aluno_a_uma_disciplina()
     /* Insere o aluno na disciplina */
     append_aluno_disciplina(disciplina, aluno);
 
-    puts("\nAluno foi adicionado a disciplina com sucesso!");
+    puts("\nAluno foi adicionado a disciplina com sucesso!\n");
     return;
 }
 
@@ -162,7 +162,7 @@ void remover_aluno_de_uma_disciplina()
     aluno = buscar_aluno(matricula);
     if (aluno == NULL)
     {
-        puts("\nO aluno não consta na base de dados...");
+        puts("\nO aluno não consta na base de dados...\n");
         sleep(SLEEP);
         return;
     }
@@ -175,7 +175,7 @@ void remover_aluno_de_uma_disciplina()
     /* Confere se a disciplina existe */
     if (disciplina == NULL)
     {
-        puts("\nCódigo da disciplina não consta na base de dados...");
+        puts("\nCódigo da disciplina não consta na base de dados...\n");
         sleep(SLEEP);
         return;
     }
@@ -183,7 +183,7 @@ void remover_aluno_de_uma_disciplina()
     /* Confere se a disciplina não está vazia */
     if (qnt_alunos_disciplina(codigo) == 0)
     {
-        puts("\nEssa disciplina não possui nenhum aluno...");
+        puts("\nEssa disciplina não possui nenhum aluno...\n");
         sleep(SLEEP);
         return;
     }
@@ -193,13 +193,13 @@ void remover_aluno_de_uma_disciplina()
         if (strcmp(disciplina->alunos[i].matricula, matricula) == 0)
         {
             strcpy(disciplina->alunos[i].matricula, "");
-            puts("\nAluno removido da disciplina com sucesso!");
+            puts("\nAluno removido da disciplina com sucesso!\n");
             sleep(SLEEP);
             return;
         }
 
     /* Se o código chegou até aqui, significa que o aluno não está presente na disciplina */
-    puts("\nO aluno não está cadastrado na disciplina...");
+    puts("\nO aluno não está cadastrado na disciplina...\n");
     sleep(SLEEP);
     return;
 }
@@ -216,7 +216,7 @@ void exibir_dados_de_uma_disciplina()
 
     if (disciplina == NULL)
     {
-        puts("\nO código da disciplina não consta na base de dados...");
+        puts("\nO código da disciplina não consta na base de dados...\n");
         sleep(SLEEP);
         return;
     }

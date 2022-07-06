@@ -36,7 +36,7 @@ void ler(char *input, int len)
             }
             if (user_input_len > len - 1)
             {
-                printf("Input deve conter no máximo %d caracteres.\nDigite novamente: ", len - 1);
+                printf("\nInput passou do limite de %d caracteres.\nDigite novamente: ", len - 1);
                 sleep(SLEEP);
             }
             else

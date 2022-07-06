@@ -4,17 +4,10 @@
 
 void cadastrar_disciplina()
 {
-    char *args[11], padrao[400];
     Disciplina d, aux;
 
-    printf("Dados: ");
-    // ler(padrao, sizeof(padrao));
-    strcpy(padrao, "cod;nome;1;p");
-    puts(padrao);
-
-    extract_arguments_from_string(args, padrao);
-
-    strcpy(d.codigo, args[0]);
+    printf("Codigo: ");
+    ler(d.codigo, 50);
 
     /* Verifica se excedeu o limite de disciplinas ou se a disciplina já consta na base de dados */
     bool tem_vaga = false, is_duplicada = false;
@@ -40,11 +33,20 @@ void cadastrar_disciplina()
         return;
     }
 
-    strcpy(d.nome, args[1]);
-    d.carga_horaria = atoi(args[2]);
+    printf("Nome: ");
+    ler(d.nome, 50);
 
-    if (buscar_professor(args[3]))
-        d.professor = *buscar_professor(args[3]);
+    printf("Carga horária");
+    scanf("%d", &d.carga_horaria);
+    getchar();
+
+    char *pis;
+    printf("PIS do professor: ");
+    ler(pis, 50);
+
+    Pessoa *professor = buscar_professor(pis);
+    if (professor != NULL)
+        d.professor = *professor;
     else
     {
         puts("\nProfessor não consta na base de dados...");

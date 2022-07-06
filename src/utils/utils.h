@@ -12,5 +12,4 @@ bool escolher(char *m0, char *m1, char *m2);
 
 void ler(char *input, int len);
 
-void extract_arguments_from_string(char **dest, char *str);
 #endif // _UTILS_H

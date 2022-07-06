@@ -39,29 +39,55 @@ void cadastrar_pessoa()
     }
     else
     {
-        printf("CPF (apenas dígitos): ");
-        ler(p.cpf, 12);
+        bool is_cpf_valid = false;
+        do
+        {
+            printf("CPF (apenas dígitos): ");
+            ler(p.cpf, 12);
 
-        /* Valida o CPF */
-        for (int i = 0; i < strlen(p.cpf) - 1; i++)
-            if (!isdigit(p.cpf[i]))
+            /* Valida o CPF */
+            if (strlen(p.cpf) == 11)
             {
-                puts("\nCPF deve conter 11 digitos (sem pontos ou traços)");
-                sleep(SLEEP);
-                return;
+                bool is_digit = true;
+                for (int i = 0; i < strlen(p.cpf) - 1; i++)
+                    if (!isdigit(p.cpf[i]))
+                        is_digit = false;
+                if (is_digit)
+                    is_cpf_valid = true;
             }
 
-        printf("RG (apenas dígitos): ");
-        ler(p.rg, 8);
-
-        /* Valida o RG */
-        for (int i = 0; i < strlen(p.rg) - 1; i++)
-            if (!isdigit(p.rg[i]))
+            if (!is_cpf_valid)
             {
-                puts("\nRG deve conter 7 dígitos (sem pontos ou traços)");
+                puts("\nCPF deve conter exatamente 11 digitos (sem pontos ou traços)\n");
                 sleep(SLEEP);
-                return;
             }
+
+        } while (!is_cpf_valid);
+
+        bool is_rg_valid = false;
+        do
+        {
+            printf("RG (apenas dígitos): ");
+            ler(p.rg, 8);
+
+            /* Valida o RG */
+            if (strlen(p.rg) == 7)
+            {
+                bool is_digit = true;
+                for (int i = 0; i < strlen(p.rg) - 1; i++)
+                    if (!isdigit(p.rg[i]))
+                        is_digit = false;
+                if (is_digit)
+                    is_rg_valid = true;
+            }
+
+            if (!is_rg_valid)
+            {
+                puts("\nRG deve conter exatamente 8 digitos (sem pontos ou traços)\n");
+                sleep(SLEEP);
+            }
+
+        } while (!is_rg_valid);
     }
 
     printf("Data de nascimento (DD/MM/AAAA): ");
@@ -76,17 +102,30 @@ void cadastrar_pessoa()
         ler(p.laudo_medico, 50);
     }
 
-    printf("CEP (apenas dígitos): ");
-    ler(p.cep, 9);
+    bool is_cep_valid = false;
+    do
+    {
+        printf("CEP (apenas dígitos): ");
+        ler(p.cep, 9);
 
-    /* Valida CEP */
-    for (int i = 0; i < strlen(p.cep); i++)
-        if (!isdigit(p.cep[i]))
+        /* Valida CEP */
+        if (strlen(p.cep) == 8)
         {
-            puts("\nCEP deve conter 8 dígitos (sem pontos ou traços)");
-            sleep(SLEEP);
-            return;
+            bool is_digit = true;
+            for (int i = 0; i < strlen(p.cep) - 1; i++)
+                if (!isdigit(p.cep[i]))
+                    is_digit = false;
+            if (is_digit)
+                is_cep_valid = true;
         }
+
+        if (!is_cep_valid)
+        {
+            puts("\nCEP deve conter exatamente 8 dígitos (sem pontos ou traços)\n");
+            sleep(SLEEP);
+        }
+
+    } while (!is_cep_valid);
 
     p.is_professor = escolher("É professor?", "sim", "não");
     if (p.is_professor)
@@ -97,7 +136,7 @@ void cadastrar_pessoa()
         // Verificar se há espaço suficiente para inserir o professor
         if (qnt_professores() == MAX_PROFESSORES_ESCOLA)
         {
-            puts("\nAtingiu o limite máximo (30) de professores. Voltando para o menu principal...");
+            puts("\nAtingiu o limite máximo (30) de professores. Voltando para o menu principal...\n");
             sleep(SLEEP);
             return;
         }
@@ -108,7 +147,7 @@ void cadastrar_pessoa()
             {
                 escola.professores[i] = p;
 
-                puts("\nProfessor cadastrado com sucesso!");
+                puts("\nProfessor cadastrado com sucesso!\n");
                 sleep(SLEEP);
                 return;
             }
@@ -131,7 +170,7 @@ void cadastrar_pessoa()
         // Verificar se há espaço suficiente para inserir o aluno
         if (qnt_alunos == MAX_ALUNOS_ESCOLA)
         {
-            puts("\nAtingiu o limite máximo (30) de alunos. Voltando para o menu principal...");
+            puts("\nAtingiu o limite máximo (30) de alunos. Voltando para o menu principal...\n");
             sleep(SLEEP);
             return;
         }
@@ -155,7 +194,7 @@ void exibir_dados_de_uma_pessoa()
 
     if (pessoa == NULL)
     {
-        puts("\nNão consta na base de dados. Retornando ao menu principal...");
+        puts("\nNão consta na base de dados. Retornando ao menu principal...\n");
         sleep(SLEEP);
         return;
     }
@@ -265,7 +304,7 @@ void alterar_dados_de_pessoa()
     p = buscar_pessoa();
     if (p == NULL)
     {
-        puts("\nPessoa não consta na base de dados. Retornando ao menu principal...");
+        puts("\nPessoa não consta na base de dados. Retornando ao menu principal...\n");
         sleep(SLEEP);
         return;
     }
@@ -313,7 +352,7 @@ void remover_pessoa()
 
     if (p == NULL)
     {
-        puts("\nPessoa não consta na base de dados...");
+        puts("\nPessoa não consta na base de dados...\n");
         sleep(SLEEP);
         return;
     }
@@ -327,7 +366,8 @@ void remover_pessoa()
             if (!strcmp(d.professor.pis, p->pis))
             {
                 strcpy(p->pis, "");
-                puts("\nRemocação bem sucedida!");
+                puts("\nRemocação bem sucedida!\n");
+                sleep(SLEEP);
                 return;
             }
         }
@@ -340,16 +380,13 @@ void remover_pessoa()
         for (int i = 0; i < MAX_DISCIPLINAS_ESCOLA; i++)
         {
             Disciplina d = escola.disciplinas[i];
-
             for (int j = 0; j < MAX_ALUNOS_DISCIPLINA; j++)
-            {
                 if (!strcmp(d.alunos[j].matricula, p->matricula))
                 {
                     strcpy(p->matricula, "");
                     puts("\nRemocação bem sucedida!");
                     return;
                 }
-            }
         }
         puts("\nAluno está presente em uma ou mais disciplinas. Não é possível remover...\n");
         sleep(SLEEP);

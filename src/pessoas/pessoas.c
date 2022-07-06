@@ -365,13 +365,14 @@ void remover_pessoa()
             Disciplina d = escola.disciplinas[i];
             if (!strcmp(d.professor.pis, p->pis))
             {
-                strcpy(p->pis, "");
-                puts("\nRemocação bem sucedida!\n");
+                puts("\nProfessor está presente em uma ou mais disciplinas. Não é possível remover...\n");
                 sleep(SLEEP);
                 return;
             }
         }
-        puts("\nProfessor está presente em uma ou mais disciplinas. Não é possível remover...\n");
+
+        strcpy(p->pis, "");
+        puts("\nRemocação bem sucedida!\n");
         sleep(SLEEP);
         return;
     }
@@ -383,12 +384,14 @@ void remover_pessoa()
             for (int j = 0; j < MAX_ALUNOS_DISCIPLINA; j++)
                 if (!strcmp(d.alunos[j].matricula, p->matricula))
                 {
-                    strcpy(p->matricula, "");
-                    puts("\nRemocação bem sucedida!");
+                    puts("\nAluno está presente em uma ou mais disciplinas. Não é possível remover...\n");
+                    sleep(SLEEP);
                     return;
                 }
         }
-        puts("\nAluno está presente em uma ou mais disciplinas. Não é possível remover...\n");
+        
+        strcpy(p->matricula, "");
+        puts("\nRemocação bem sucedida!");
         sleep(SLEEP);
         return;
     }

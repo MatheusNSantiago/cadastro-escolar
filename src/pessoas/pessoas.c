@@ -19,56 +19,80 @@ ao invés de 0;CPF;RG deve ser fornecido NUMPassaporte;PaisOrigem */
 void cadastrar_pessoa()
 {
     Pessoa p;
-    char *args[11];
-    char padrao[400];
-
-    /* Recebe o padrão como input */
-    printf("Dados: ");
-
-    /* |────────────────────────────────────────────────| DEBUG |────────────────────────────────────────────────| */
-    int i;
-    scanf("%d", &i);
-    getchar();
-
-    if (i == 1)
-        strcpy(padrao, "Daniel;Saad;1;Passaporte;Chile;10/12/1984;0;1234;1;p");
-    else
-        strcpy(padrao, "matheus;santiago;0;14163386750;3950638;19/07/1999;1;laudo medico;71015112;0");
-    puts(padrao);
-    /* |─────────────────────────────────────────────────────────────────────────────────────────────────────────| */
-
-    // ler(padrao, sizeof(padrao));
-
-    extract_arguments_from_string(args, padrao);
-
 
     /* Designa os atributos */
-    strncpy(p.nome, args[0], sizeof(p.nome) - 1);
-    strncpy(p.sobrenome, args[1], sizeof(p.sobrenome) - 1);
-    p.is_estrangeiro = atoi(args[2]);
-    if (p.is_estrangeiro == 0) // Se for brasileiro
+    printf("Nome: ");
+    ler(p.nome, 50);
+
+    printf("Sobrenome: ");
+    ler(p.sobrenome, 50);
+
+    p.is_estrangeiro = escolher("É estrangeiro?", "sim", "não");
+
+    if (p.is_estrangeiro)
     {
-        strncpy(p.cpf, args[3], sizeof(p.cpf) - 1);
-        strncpy(p.rg, args[4], sizeof(p.rg) - 1);
+        printf("Número do passaporte: ");
+        ler(p.passaporte, 50);
+
+        printf("Páis de origem: ");
+        ler(p.pais_de_origem, 50);
     }
     else
     {
-        strncpy(p.passaporte, args[3], sizeof(p.passaporte) - 1);
-        strncpy(p.pais_de_origem, args[4], sizeof(p.pais_de_origem) - 1);
+        printf("CPF (apenas dígitos): ");
+        ler(p.cpf, 12);
+
+        /* Valida o CPF */
+        for (int i = 0; i < strlen(p.cpf) - 1; i++)
+            if (!isdigit(p.cpf[i]))
+            {
+                puts("\nCPF deve conter 11 digitos (sem pontos ou traços)");
+                sleep(SLEEP);
+                return;
+            }
+
+        printf("RG (apenas dígitos): ");
+        ler(p.rg, 8);
+
+        /* Valida o RG */
+        for (int i = 0; i < strlen(p.rg) - 1; i++)
+            if (!isdigit(p.rg[i]))
+            {
+                puts("\nRG deve conter 7 dígitos (sem pontos ou traços)");
+                sleep(SLEEP);
+                return;
+            }
     }
 
-    sscanf(args[5], "%d/%d/%d", &p.nascimento.dia, &p.nascimento.mes, &p.nascimento.ano);
+    printf("Data de nascimento (DD/MM/AAAA): ");
+    char tmpDate[11];
+    ler(tmpDate, 11);
+    sscanf(tmpDate, "%d/%d/%d", &p.nascimento.dia, &p.nascimento.mes, &p.nascimento.ano);
 
-    p.is_pcd = atoi(args[6]);
-    if (p.is_pcd) // Se for pessoa com deficiência
-        strncpy(p.laudo_medico, args[7], sizeof(p.laudo_medico) - 1);
+    p.is_pcd = escolher("É Pessoa com Deficiência?", "sim", "não");
+    if (p.is_pcd)
+    {
+        printf("Laudo médico: ");
+        ler(p.laudo_medico, 50);
+    }
 
-    strncpy(p.cep, args[7 + p.is_pcd], sizeof(p.cep) - 1);
+    printf("CEP (apenas dígitos): ");
+    ler(p.cep, 9);
 
-    p.is_professor = atoi(args[8 + p.is_pcd]);
+    /* Valida CEP */
+    for (int i = 0; i < strlen(p.cep); i++)
+        if (!isdigit(p.cep[i]))
+        {
+            puts("\nCEP deve conter 8 dígitos (sem pontos ou traços)");
+            sleep(SLEEP);
+            return;
+        }
+
+    p.is_professor = escolher("É professor?", "sim", "não");
     if (p.is_professor)
     {
-        strncpy(p.pis, args[9 + p.is_pcd], sizeof(p.pis) - 1);
+        printf("PIS: ");
+        ler(p.pis, 50);
 
         // Verificar se há espaço suficiente para inserir o professor
         if (qnt_professores() == MAX_PROFESSORES_ESCOLA)
@@ -84,7 +108,7 @@ void cadastrar_pessoa()
             {
                 escola.professores[i] = p;
 
-                // puts("\nProfessor cadastrado com sucesso!");
+                puts("\nProfessor cadastrado com sucesso!");
                 sleep(SLEEP);
                 return;
             }
@@ -118,7 +142,6 @@ void cadastrar_pessoa()
             {
                 escola.alunos[i] = p;
 
-                // puts("\nAluno cadastrado com sucesso!");
                 sleep(SLEEP);
                 return;
             }
@@ -144,7 +167,7 @@ void exibir_dados_de_uma_pessoa()
     printf("- Sobrenome: %s\n", p.sobrenome);
     if (p.is_estrangeiro)
     {
-        puts("- Extrangeiro");
+        puts("- Estrangeiro");
         printf("  - Passaporte: %s\n", p.passaporte);
         printf("  - País de origem: %s\n", p.pais_de_origem);
     }
@@ -233,7 +256,6 @@ Pessoa *buscar_aluno(char *matricula)
 
     return aluno;
 }
-
 
 void alterar_dados_de_pessoa()
 {

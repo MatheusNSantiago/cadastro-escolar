@@ -23,8 +23,8 @@ typedef struct pessoa
     char sobrenome[50];
 
     bool is_estrangeiro;
-    char cpf[50];            // caso seja brasileiro
-    char rg[50];             // caso seja brasileiro
+    char cpf[12];            // caso seja brasileiro
+    char rg[8];             // caso seja brasileiro
     char passaporte[50];     // caso seja estrangeiro
     char pais_de_origem[50]; // caso seja estrangeiro
 
@@ -32,7 +32,7 @@ typedef struct pessoa
     bool is_pcd;
     char laudo_medico[1000]; // caso seja pcd
 
-    char cep[50];
+    char cep[9];
 
     bool is_professor;
     char matricula[50]; // caso seja aluno

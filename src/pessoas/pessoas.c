@@ -318,10 +318,41 @@ void remover_pessoa()
         return;
     }
 
+    /* Um aluno ou professor só pode ser removido se este não está presente em nenhuma das disciplinas cadastradas */
     if (p->is_professor)
-        strcpy(p->pis, "");
+    {
+        for (int i = 0; i < MAX_DISCIPLINAS_ESCOLA; i++)
+        {
+            Disciplina d = escola.disciplinas[i];
+            if (!strcmp(d.professor.pis, p->pis))
+            {
+                strcpy(p->pis, "");
+                puts("\nRemocação bem sucedida!");
+                return;
+            }
+        }
+        puts("\nProfessor está presente em uma ou mais disciplinas. Não é possível remover...\n");
+        sleep(SLEEP);
+        return;
+    }
     else
-        strcpy(p->matricula, "");
+    {
+        for (int i = 0; i < MAX_DISCIPLINAS_ESCOLA; i++)
+        {
+            Disciplina d = escola.disciplinas[i];
 
-    puts("\nRemocação bem sucedida!");
+            for (int j = 0; j < MAX_ALUNOS_DISCIPLINA; j++)
+            {
+                if (!strcmp(d.alunos[j].matricula, p->matricula))
+                {
+                    strcpy(p->matricula, "");
+                    puts("\nRemocação bem sucedida!");
+                    return;
+                }
+            }
+        }
+        puts("\nAluno está presente em uma ou mais disciplinas. Não é possível remover...\n");
+        sleep(SLEEP);
+        return;
+    }
 }
